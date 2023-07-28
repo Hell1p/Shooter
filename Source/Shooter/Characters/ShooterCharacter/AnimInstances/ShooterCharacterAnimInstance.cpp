@@ -26,4 +26,7 @@ void UShooterCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bIsSprinting = ShooterCharacter->GetbSprinting();
 	Direction = UKismetAnimationLibrary::CalculateDirection(ShooterCharacter->GetVelocity(), ShooterCharacter->GetActorRotation());
 	bIsInAir = ShooterCharacter->GetCharacterMovement()->IsFalling();
+	CharacterState = ShooterCharacter->GetCharacterState();
+	WeaponType = ShooterCharacter->GetWeaponType();
+	AO_Pitch = ShooterCharacter->GetAO_Pitch();
 }
