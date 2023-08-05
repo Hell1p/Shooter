@@ -31,27 +31,37 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-
-	UPROPERTY(VisibleAnywhere)
-	float Damage = 5.f;
 	
 	UPROPERTY(BlueprintReadOnly)
 	EWeaponState WeaponState = EWeaponState::EWS_Initial;
 	
 private:
+#pragma region WeaponProperties
+
+	UPROPERTY(EditAnywhere, Category = WeaponProperties)
+	float Damage = 5.f;
+
 	UPROPERTY(EditAnywhere, Category = WeaponProperties)
 	float FireDelay = .15f;
 
 	UPROPERTY(EditAnywhere, Category = WeaponProperties)
 	bool bAutomatic = true;
-	
-	/** Components */
+
+#pragma endregion WeaponProperties
+
+#pragma region Components
+
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* WeaponMesh;
 	
-	/** Animations */
+#pragma endregion Components
+
+#pragma region Animations
+
 	UPROPERTY(EditAnywhere, Category = WeaponProperties)
 	UAnimationAsset* FireAnimation;
+
+#pragma endregion Animations
 	
 public:
 	FORCEINLINE void SetWeaponState(EWeaponState State) { WeaponState = State; }
@@ -59,4 +69,5 @@ public:
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
 	FORCEINLINE float GetFireDelay() const { return FireDelay; }
 	FORCEINLINE bool GetbAutomatic() const { return bAutomatic; }
+	FORCEINLINE float GetDamaage() const { return Damage; }
 };

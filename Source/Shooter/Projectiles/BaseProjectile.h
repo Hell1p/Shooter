@@ -39,7 +39,6 @@ private:
 
 	EPhysicalSurface SurfaceType;
 	
-	/** Impact Sounds/Particles */
 	UPROPERTY(EditAnywhere, Category = ImpactEffects)
 	UParticleSystem* Rock_ImpactParticles;
 	UPROPERTY(EditAnywhere, Category = ImpactEffects)

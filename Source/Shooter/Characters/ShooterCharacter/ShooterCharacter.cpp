@@ -8,6 +8,9 @@
 #include "Shooter/Shooter.h"
 #include "Shooter/Components/CombatComponent.h"
 #include "Shooter/Items/Weapons/BaseWeapon.h"
+#include "Net/UnrealNetwork.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Shooter/Characters/ShooterCharacter/PlayerController/ShooterPlayerController.h"
 
 AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterCharacterMovementComp>(ACharacter::CharacterMovementComponentName))
@@ -47,12 +50,17 @@ void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	DefaultFOV = FollowCamera->FieldOfView;
+
 	ShooterCharacterMovement = Cast<UShooterCharacterMovementComp>(GetCharacterMovement());
 }
 
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	RepControlRotation(DeltaTime);
+	HandleFOV(DeltaTime);
 }
 
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -72,6 +80,12 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction(FName("Equip"), IE_Pressed, this, &AShooterCharacter::EquipButtonPressed);
 	PlayerInputComponent->BindAction(FName("Fire"), IE_Pressed, this, &AShooterCharacter::FireButtonPressed);
 	PlayerInputComponent->BindAction(FName("Fire"), IE_Released, this, &AShooterCharacter::FireButtonReleased);
+	PlayerInputComponent->BindAction(FName("Aim"), IE_Pressed, this, &AShooterCharacter::AimButtonPressed);
+	PlayerInputComponent->BindAction(FName("Aim"), IE_Released, this, &AShooterCharacter::AimButtonReleased);
+	PlayerInputComponent->BindAction(FName("LeanLeft"), IE_Pressed, this, &AShooterCharacter::LeanLeftButtonPressed);
+	PlayerInputComponent->BindAction(FName("LeanLeft"), IE_Released, this, &AShooterCharacter::LeanLeftButtonReleased);
+	PlayerInputComponent->BindAction(FName("LeanRight"), IE_Pressed, this, &AShooterCharacter::LeanRightButtonPressed);
+	PlayerInputComponent->BindAction(FName("LeanRight"), IE_Released, this, &AShooterCharacter::LeanRightButtonReleased);
 }
 
 void AShooterCharacter::OnConstruction(const FTransform& Transform)
@@ -84,6 +98,11 @@ void AShooterCharacter::OnConstruction(const FTransform& Transform)
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(AShooterCharacter, ControlRotation_Rep, COND_SkipOwner);
+	DOREPLIFETIME(AShooterCharacter, CurrentHealth);
+	DOREPLIFETIME(AShooterCharacter, bAiming);
+	DOREPLIFETIME(AShooterCharacter, CharacterLeanState);
 }
 
 void AShooterCharacter::PostInitializeComponents()
@@ -142,12 +161,16 @@ void AShooterCharacter::SprintReleased()
 
 void AShooterCharacter::CrouchPressed()
 {
-	Crouch();
+	ShooterCharacterMovement == nullptr ? ShooterCharacterMovement = Cast<UShooterCharacterMovementComp>(GetCharacterMovement()) : ShooterCharacterMovement;
+
+	ShooterCharacterMovement->CrouchPressed();
 }
 
 void AShooterCharacter::CrouchReleased()
 {
-	UnCrouch();
+	ShooterCharacterMovement == nullptr ? ShooterCharacterMovement = Cast<UShooterCharacterMovementComp>(GetCharacterMovement()) : ShooterCharacterMovement;
+
+	ShooterCharacterMovement->CrouchReleased();
 }
 
 void AShooterCharacter::Jump()
@@ -199,7 +222,7 @@ void AShooterCharacter::FireButtonReleased()
 	if (Combat) Combat->FireButtonPressed(false);
 }
 
-void AShooterCharacter::PlayFireMontage(bool bAiming)
+void AShooterCharacter::PlayFireMontage(bool IsbAiming)
 {
 	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
 
@@ -208,19 +231,85 @@ void AShooterCharacter::PlayFireMontage(bool bAiming)
 	{
 		AnimInstance->Montage_Play(FireWeaponMontage);
 		FName SectionName;
-		SectionName = bAiming ? FName("") : FName("ARHip");
+		SectionName = IsbAiming ? FName("") : FName("ARHip");
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
 
-void AShooterCharacter::AimOffset(float DeltaTime)
+void AShooterCharacter::RepControlRotation(float DeltaTime)
 {
-	AO_Pitch = GetBaseAimRotation().Pitch;
-	if (AO_Pitch > 90.f && !IsLocallyControlled())
+	if (HasAuthority() || IsLocallyControlled())
 	{
-		// Map pitch from [270, 360) to [-90, 0)
-		FVector2D InRange(270.f, 360.f);
-		FVector2D OutRange(-90.f, 0.f);
-		AO_Pitch = FMath::GetMappedRangeValueClamped(InRange, OutRange, AO_Pitch);
+		ControlRotation_Rep = GetController()->GetControlRotation();
+	}
+}
+
+void AShooterCharacter::HandleFOV(float DeltaTime)
+{
+	if (bAiming)
+	{
+		CurrentFOV = FMath::FInterpTo(CurrentFOV, AimFOV, DeltaTime, 10.f);
+	}
+	else if (CurrentFOV != DefaultFOV)
+	{
+		CurrentFOV = FMath::FInterpTo(CurrentFOV, DefaultFOV, DeltaTime, 10.f);
+	}
+	FollowCamera->SetFieldOfView(CurrentFOV);
+}
+
+void AShooterCharacter::AimButtonPressed()
+{
+	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	Combat->AimButtonPressed(true);
+}
+
+void AShooterCharacter::AimButtonReleased()
+{
+	if (Combat == nullptr) return;
+	Combat->AimButtonPressed(false);
+}
+
+void AShooterCharacter::LeanLeftButtonPressed()
+{
+	Server_LeanLeftButtonPressed(true);	
+}
+
+void AShooterCharacter::LeanLeftButtonReleased()
+{
+	Server_LeanLeftButtonPressed(false);
+}
+
+void AShooterCharacter::LeanRightButtonPressed()
+{
+	Server_LeanRightButtonPressed(true);
+}
+
+void AShooterCharacter::LeanRightButtonReleased()
+{
+	Server_LeanRightButtonPressed(false);
+}
+
+void AShooterCharacter::Server_LeanLeftButtonPressed_Implementation(float bPressed)
+{
+	if (bPressed)
+	{
+		CharacterLeanState = ECharacterLeanState::ECLS_Left;
+	}
+	else
+	{
+		if (!(CharacterLeanState == ECharacterLeanState::ECLS_Right)) CharacterLeanState = ECharacterLeanState::ECLS_None;
+	}
+}
+
+void AShooterCharacter::Server_LeanRightButtonPressed_Implementation(float bPressed)
+{
+	if (bPressed)
+	{
+		CharacterLeanState = ECharacterLeanState::ECLS_Right;
+	}
+	else
+	{
+		if (!(CharacterLeanState == ECharacterLeanState::ECLS_Left)) CharacterLeanState = ECharacterLeanState::ECLS_None;
 	}
 }

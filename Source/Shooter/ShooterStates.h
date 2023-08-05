@@ -19,3 +19,13 @@ enum class EWeaponType : uint8
 
 	EWT_MAX UMETA(DisplayName = "DefaultMAX")
 };
+
+UENUM(BlueprintType)
+enum class ECharacterLeanState : uint8
+{
+	ECLS_None UMETA(DisplayName = "None"),
+	ECLS_Left UMETA(DisplayName = "Left"),
+	ECLS_Right UMETA(DisplayName = "Right"),
+
+	ECLS_MAX UMETA(DisplayName = "DefaultMAX")
+};

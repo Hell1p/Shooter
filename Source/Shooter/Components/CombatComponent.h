@@ -34,6 +34,10 @@ private:
 	void FireButtonPressed(bool bPressed);
 	void Fire();
 
+	void AimButtonPressed(bool bPressed);
+	UFUNCTION(Server, Reliable)
+	void Server_Aim(bool bPressed);
+
 	FTimerHandle FireTimer;
 	
 	bool bCanFire = true;

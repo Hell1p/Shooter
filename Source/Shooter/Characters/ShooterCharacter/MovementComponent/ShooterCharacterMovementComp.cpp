@@ -6,7 +6,7 @@
 
 UShooterCharacterMovementComp::UShooterCharacterMovementComp()
 {
-	
+	NavAgentProps.bCanCrouch = true;
 }
 
 UShooterCharacterMovementComp::FNetworkPredictionData_Client_Shooter::FNetworkPredictionData_Client_Shooter(const UCharacterMovementComponent& ClientMovement)
@@ -22,6 +22,16 @@ void UShooterCharacterMovementComp::SprintPressed()
 void UShooterCharacterMovementComp::SprintReleased()
 {
 	Safe_bWantsToSprint = false;
+}
+
+void UShooterCharacterMovementComp::CrouchPressed()
+{
+	bWantsToCrouch = true;
+}
+
+void UShooterCharacterMovementComp::CrouchReleased()
+{
+	bWantsToCrouch = false;
 }
 
 FNetworkPredictionData_Client* UShooterCharacterMovementComp::GetPredictionData_Client() const

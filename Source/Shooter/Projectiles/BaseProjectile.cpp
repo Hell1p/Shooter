@@ -9,6 +9,7 @@
 #include "Microsoft/AllowMicrosoftPlatformTypes.h"
 #include "Shooter/Shooter.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Shooter/Items/Weapons/BaseWeapon.h"
 
 ABaseProjectile::ABaseProjectile()
 {
@@ -23,7 +24,6 @@ ABaseProjectile::ABaseProjectile()
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Block);
-	//CollisionBox->SetCollisionResponseToChannel(ECC_Item, ECollisionResponse::ECR_Ignore);
 	CollisionBox->bReturnMaterialOnMove = true;
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
@@ -64,7 +64,7 @@ void ABaseProjectile::Destroyed()
 	}
 	else if (SurfaceType == EPS_Metal)
 	{
-		if (Metal_ImpactParticles) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Metal_ImpactParticles, GetActorTransform()); // TODO: replicate effects
+		if (Metal_ImpactParticles) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Metal_ImpactParticles, GetActorTransform());
 		if (Metal_ImpactSound) UGameplayStatics::PlaySoundAtLocation(this, Metal_ImpactSound, GetActorLocation());
 	}
 }

@@ -9,6 +9,7 @@
 class ABaseProjectile;
 class UCameraComponent;
 class AShooterCharacter;
+class AShooterPlayerController;
 
 UCLASS()
 class SHOOTER_API AProjectileWeapon : public ABaseWeapon

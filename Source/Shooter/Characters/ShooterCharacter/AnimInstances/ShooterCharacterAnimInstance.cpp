@@ -28,5 +28,7 @@ void UShooterCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	bIsInAir = ShooterCharacter->GetCharacterMovement()->IsFalling();
 	CharacterState = ShooterCharacter->GetCharacterState();
 	WeaponType = ShooterCharacter->GetWeaponType();
-	AO_Pitch = ShooterCharacter->GetAO_Pitch();
+	ControlRotation_Rep = ShooterCharacter->GetControlRotation_Rep();
+	bIsAiming = ShooterCharacter->GetbAiming();
+	CharacterLeanState = ShooterCharacter->GetLeanState();
 }

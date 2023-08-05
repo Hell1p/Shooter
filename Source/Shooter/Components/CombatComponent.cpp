@@ -86,3 +86,23 @@ void UCombatComponent::Fire()
 		StartFireTimer();
 	}
 }
+
+void UCombatComponent::AimButtonPressed(bool bPressed)
+{
+	if (bPressed)
+	{
+		Server_Aim(true);
+	}
+	else
+	{
+		Server_Aim(false);
+	}
+}
+
+void UCombatComponent::Server_Aim_Implementation(bool bPressed)
+{
+	if (Character == nullptr) return;
+
+	if (bPressed) Character->SetbAiming(true);
+	else Character->SetbAiming(false);
+}

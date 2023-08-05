@@ -16,10 +16,11 @@ public:
 
 	virtual FNetworkPredictionData_Client* GetPredictionData_Client() const override;
 
-	UFUNCTION(BlueprintCallable)
 	void SprintPressed();
-	UFUNCTION(BlueprintCallable)
 	void SprintReleased();
+
+	void CrouchPressed();
+	void CrouchReleased();
 
 protected:
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;

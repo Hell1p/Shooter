@@ -5,6 +5,9 @@
 #include "Shooter/Projectiles/BaseProjectile.h"
 #include "Shooter/Characters/ShooterCharacter/ShooterCharacter.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "GameFramework/PlayerController.h"
+#include "Shooter/Characters/ShooterCharacter/PlayerController/ShooterPlayerController.h"
+#include "Camera/CameraComponent.h"
 
 void AProjectileWeapon::Fire()
 {
@@ -21,7 +24,10 @@ void AProjectileWeapon::Fire()
 
 	FVector CameraLocation;
 	FRotator CameraRotation;
-	Character->GetController()->GetPlayerViewPoint(CameraLocation, CameraRotation);
+
+	//AShooterPlayerController* ShooterController = Cast<AShooterPlayerController>(Character->Controller);
+	//Character->GetController()->GetPlayerViewPoint(CameraLocation, CameraRotation);
+	CameraRotation = Character->GetCamera()->GetComponentRotation();
 
 	FVector CameraDirection = CameraRotation.Vector();
 	FRotator BulletRotation = CameraDirection.Rotation();
