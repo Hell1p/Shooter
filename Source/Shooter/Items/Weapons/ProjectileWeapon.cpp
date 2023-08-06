@@ -35,5 +35,6 @@ void AProjectileWeapon::Fire()
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = GetOwner();
 
-	GetWorld()->SpawnActor<ABaseProjectile>(ProjectileClass, MuzzleLocation, BulletRotation, SpawnParams);
+	ABaseProjectile* Projectile = GetWorld()->SpawnActor<ABaseProjectile>(ProjectileClass, MuzzleLocation, BulletRotation, SpawnParams);
+	if (Projectile) Projectile->SetOwner(this);
 }

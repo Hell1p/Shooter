@@ -24,5 +24,4 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = WeaponProperties)
 	TSubclassOf<ABaseProjectile> ProjectileClass;
-
 };

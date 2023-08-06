@@ -10,6 +10,7 @@
 #include "Shooter/Shooter.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Shooter/Items/Weapons/BaseWeapon.h"
+#include "Shooter/Characters/ShooterCharacter/ShooterCharacter.h"
 
 ABaseProjectile::ABaseProjectile()
 {
@@ -24,6 +25,7 @@ ABaseProjectile::ABaseProjectile()
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Block);
+	CollisionBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 	CollisionBox->bReturnMaterialOnMove = true;
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
@@ -69,14 +71,26 @@ void ABaseProjectile::Destroyed()
 	}
 }
 
-void ABaseProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	FVector NormalImpulse, const FHitResult& Hit)
+void ABaseProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	ABaseWeapon* Weapon = Cast<ABaseWeapon>(GetOwner());
+	if (Weapon == nullptr) return;
+	AShooterCharacter* OwnerCharacter = Cast<AShooterCharacter>(Weapon->GetOwner());
+	if (OwnerCharacter == nullptr) return;
+
 	UPhysicalMaterial* PhysMaterial = Hit.PhysMaterial.Get();
 	SurfaceType = PhysMaterial->SurfaceType;
+	if (OwnerCharacter->HasAuthority())
+	{
+		if (OtherComp->IsSimulatingPhysics()) OtherComp->AddImpulseAtLocation(GetVelocity() - 100.f, GetActorLocation());
 
-	if (OtherComp->IsSimulatingPhysics()) OtherComp->AddImpulseAtLocation(GetVelocity() - 100.f, GetActorLocation());
-	
+		HandleOnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit, Weapon);
+	}
+
 	Destroy();
 }
 
+void ABaseProjectile::HandleOnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit, ABaseWeapon* Weapon)
+{
+
+}

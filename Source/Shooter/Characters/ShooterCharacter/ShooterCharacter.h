@@ -23,8 +23,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void PostInitializeComponents() override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void OnConstruction(const FTransform& Transform) override;
 	
 	void PlayFireMontage(bool bIsAiming);
 
@@ -77,8 +77,11 @@ private:
 
 #pragma region PlayerProperties
 
+	UFUNCTION()
+	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser);
+
 	UPROPERTY(EditDefaultsOnly, Category = PlayerProperties)
-	int MaxHealth;
+	int MaxHealth = 100;
 	UPROPERTY(VisibleAnywhere, Replicated, Category = PlayerProperties)
 	int CurrentHealth;
 

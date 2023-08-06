@@ -9,6 +9,7 @@
 class UBoxComponent;
 class UProjectileMovementComponent;
 class USoundCue;
+class ABaseWeapon;
 
 UCLASS()
 class SHOOTER_API ABaseProjectile : public AActor
@@ -26,6 +27,8 @@ protected:
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 private:
+	virtual void HandleOnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit, ABaseWeapon* Weapon);
+
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* CollisionBox;
 

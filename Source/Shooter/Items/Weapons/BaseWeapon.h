@@ -69,5 +69,5 @@ public:
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
 	FORCEINLINE float GetFireDelay() const { return FireDelay; }
 	FORCEINLINE bool GetbAutomatic() const { return bAutomatic; }
-	FORCEINLINE float GetDamaage() const { return Damage; }
+	FORCEINLINE float GetDamage() const { return Damage; }
 };

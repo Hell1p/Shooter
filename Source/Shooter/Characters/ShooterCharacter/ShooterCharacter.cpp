@@ -50,7 +50,10 @@ void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	OnTakeAnyDamage.AddDynamic(this, &AShooterCharacter::ReceiveDamage);
+
 	DefaultFOV = FollowCamera->FieldOfView;
+	CurrentHealth = MaxHealth;
 
 	ShooterCharacterMovement = Cast<UShooterCharacterMovementComp>(GetCharacterMovement());
 }
@@ -312,4 +315,11 @@ void AShooterCharacter::Server_LeanRightButtonPressed_Implementation(float bPres
 	{
 		if (!(CharacterLeanState == ECharacterLeanState::ECLS_Left)) CharacterLeanState = ECharacterLeanState::ECLS_None;
 	}
+}
+
+void AShooterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
+{
+	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0, MaxHealth);
+
+	if (CurrentHealth == 0.f) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Dead"));
 }
