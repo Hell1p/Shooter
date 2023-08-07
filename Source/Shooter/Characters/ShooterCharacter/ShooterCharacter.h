@@ -12,6 +12,7 @@ class UShooterCharacterMovementComp;
 class UCameraComponent;
 class AShooterPlayerController;
 class APlayerController;
+class UCurveFloat;
 
 UCLASS()
 class SHOOTER_API AShooterCharacter : public ACharacter

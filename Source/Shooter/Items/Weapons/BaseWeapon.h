@@ -47,6 +47,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = WeaponProperties)
 	bool bAutomatic = true;
 
+	UPROPERTY(EditAnywhere, Category = WeaponProperties)
+	bool bUseScatter = true;
+
 #pragma endregion WeaponProperties
 
 #pragma region Components

@@ -138,11 +138,13 @@ void AShooterCharacter::MoveRight(float Value)
 
 void AShooterCharacter::LookUp(float Value)
 {
+	if (Combat) Combat->PitchInput = Value;
 	AddControllerPitchInput(Value);
 }
 
 void AShooterCharacter::Turn(float Value)
 {
+	if (Combat) Combat->YawInput = Value;
 	AddControllerYawInput(Value);
 }
 
@@ -213,6 +215,8 @@ void AShooterCharacter::EquipItem()
 		WeaponSocket->AttachActor(Weapon, Arms);
 	}
 	CharacterState = ECharacterState::ECS_Equipped;
+
+	Combat->SetupRecoil();
 }
 
 void AShooterCharacter::FireButtonPressed()
