@@ -94,7 +94,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Recoil)
 	UCurveFloat* HorizontalCurve;
 
-	//UPROPERTY(Replicated)
 	FTimeline RecoilTimeline;
 
 	UPROPERTY(Replicated)

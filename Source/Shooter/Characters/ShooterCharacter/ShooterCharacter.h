@@ -68,11 +68,6 @@ private:
 
 	void RepControlRotation(float DeltaTime);
 
-	/*UFUNCTION(Server, Reliable)
-	void Server_ReplicatePitch(FRotator Rotation);
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_ReplicatePitch(FRotator Rotation);*/
-
 	UPROPERTY(Replicated)
 	FRotator ControlRotation_Rep;
 
@@ -118,6 +113,8 @@ private:
 #pragma endregion Montages
 
 #pragma region Movement
+
+	void ReplicatePitch();
 	
 	bool bSprinting;
 

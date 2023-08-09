@@ -35,7 +35,6 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UCombatComponent, YawInput);
 	DOREPLIFETIME(UCombatComponent, PitchInput);
 	DOREPLIFETIME(UCombatComponent, StartRotation);
-	//DOREPLIFETIME(UCombatComponent, RecoilTimeline);
 }
 
 void UCombatComponent::OnRep_EquippedWeapon()
