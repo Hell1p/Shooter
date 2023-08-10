@@ -25,8 +25,6 @@ void AProjectileWeapon::Fire()
 	FVector CameraLocation;
 	FRotator CameraRotation;
 
-	//AShooterPlayerController* ShooterController = Cast<AShooterPlayerController>(Character->Controller);
-	//Character->GetController()->GetPlayerViewPoint(CameraLocation, CameraRotation);
 	CameraRotation = Character->GetCamera()->GetComponentRotation();
 
 	FVector CameraDirection = CameraRotation.Vector();
@@ -35,6 +33,14 @@ void AProjectileWeapon::Fire()
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = GetOwner();
 
-	ABaseProjectile* Projectile = GetWorld()->SpawnActor<ABaseProjectile>(ProjectileClass, MuzzleLocation, BulletRotation, SpawnParams);
-	if (Projectile) Projectile->SetOwner(this);
+	if (Character->GetNeutralizeTraceDist() > Character->GetDefaultWeaponNeutralizeTraceDist())
+	{
+		ABaseProjectile* Projectile = GetWorld()->SpawnActor<ABaseProjectile>(ProjectileClass, MuzzleLocation, BulletRotation, SpawnParams);
+		if (Projectile) Projectile->SetOwner(this);
+	}
+	else
+	{
+		ABaseProjectile* Projectile = GetWorld()->SpawnActor<ABaseProjectile>(ProjectileClass, MuzzleLocation, GetActorForwardVector().Rotation(), SpawnParams);
+		if (Projectile) Projectile->SetOwner(this);
+	}
 }

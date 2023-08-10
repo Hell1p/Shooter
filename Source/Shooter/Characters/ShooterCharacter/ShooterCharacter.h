@@ -114,8 +114,12 @@ private:
 
 #pragma region Movement
 
+	UFUNCTION(Server, UnReliable)
+	void NeutralizeWeapon(float DeltaTime);
+	UPROPERTY(Replicated, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	float NeutralizeTraceDist;
+
 	void ReplicatePitch();
-	
 	bool bSprinting;
 
 #pragma endregion Movement
@@ -164,4 +168,6 @@ public:
 	FORCEINLINE FRotator GetControlRotation_Rep() const { return ControlRotation_Rep; }
 	FORCEINLINE UShooterCharacterMovementComp* GetShooterCharacterMovementComponent() const { return ShooterCharacterMovement; }
 	FORCEINLINE bool GetbAiming() const { return bAiming; }
+	FORCEINLINE float GetNeutralizeTraceDist() const { return NeutralizeTraceDist; }
+	float GetDefaultWeaponNeutralizeTraceDist() const;
 };

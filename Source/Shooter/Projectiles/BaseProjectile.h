@@ -41,6 +41,8 @@ private:
 	UParticleSystemComponent* TracerComponent;
 
 	EPhysicalSurface SurfaceType;
+
+#pragma region ImpactEffects
 	
 	UPROPERTY(EditAnywhere, Category = ImpactEffects)
 	UParticleSystem* Rock_ImpactParticles;
@@ -51,4 +53,11 @@ private:
 	UParticleSystem* Metal_ImpactParticles;
 	UPROPERTY(EditAnywhere, Category = ImpactEffects)
 	USoundCue* Metal_ImpactSound;
+
+	UPROPERTY(EditAnywhere, Category = ImpactEffects)
+	UParticleSystem* Flesh_ImpactParticles;
+	UPROPERTY(EditAnywhere, Category = ImpactEffects)
+	USoundCue* Flesh_ImpactSound;
+
+#pragma endregion ImpactEffects
 };

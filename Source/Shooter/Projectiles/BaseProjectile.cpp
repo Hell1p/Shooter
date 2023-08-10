@@ -69,6 +69,11 @@ void ABaseProjectile::Destroyed()
 		if (Metal_ImpactParticles) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Metal_ImpactParticles, GetActorTransform());
 		if (Metal_ImpactSound) UGameplayStatics::PlaySoundAtLocation(this, Metal_ImpactSound, GetActorLocation());
 	}
+	else if (SurfaceType == EPS_Flesh)
+	{
+		if (Flesh_ImpactParticles) UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Flesh_ImpactParticles, GetActorTransform());
+		if (Flesh_ImpactSound) UGameplayStatics::PlaySoundAtLocation(this, Flesh_ImpactSound, GetActorLocation());
+	}
 }
 
 void ABaseProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
