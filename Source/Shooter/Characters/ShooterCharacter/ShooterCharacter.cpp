@@ -11,6 +11,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Shooter/Characters/ShooterCharacter/PlayerController/ShooterPlayerController.h"
+#include "MathUtil.h"
 
 AShooterCharacter::AShooterCharacter(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterCharacterMovementComp>(ACharacter::CharacterMovementComponentName))
@@ -62,6 +63,8 @@ void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (IsLocallyControlled()) NeutralizeWeapon(DeltaTime);
+
 	RepControlRotation(DeltaTime);
 	HandleFOV(DeltaTime);
 }
@@ -106,6 +109,7 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(AShooterCharacter, CurrentHealth);
 	DOREPLIFETIME(AShooterCharacter, bAiming);
 	DOREPLIFETIME(AShooterCharacter, CharacterLeanState);
+	DOREPLIFETIME(AShooterCharacter, NeutralizeTraceDist);
 }
 
 void AShooterCharacter::PostInitializeComponents()
@@ -264,6 +268,12 @@ void AShooterCharacter::HandleFOV(float DeltaTime)
 	FollowCamera->SetFieldOfView(CurrentFOV);
 }
 
+float AShooterCharacter::GetDefaultWeaponNeutralizeTraceDist() const
+{
+	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return 0;
+	return Combat->EquippedWeapon->GetNeutralizeWeaponDist();
+}
+
 void AShooterCharacter::AimButtonPressed()
 {
 	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
@@ -326,4 +336,20 @@ void AShooterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const 
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0, MaxHealth);
 
 	if (CurrentHealth == 0.f) GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Dead"));
+}
+
+void AShooterCharacter::NeutralizeWeapon_Implementation(float DeltaTime)
+{
+	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	FHitResult HitResult;
+	FVector Start = FollowCamera->GetComponentLocation();
+	FVector End = GetController()->GetControlRotation().Vector() * Combat->EquippedWeapon->GetNeutralizeWeaponDist() + Start;
+	FCollisionQueryParams TraceParams;
+	TraceParams.AddIgnoredActor(this);
+	TraceParams.AddIgnoredActor(Combat->EquippedWeapon);
+
+	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility, TraceParams);
+
+	NeutralizeTraceDist = UKismetMathLibrary::Vector_Distance(Start, HitResult.ImpactPoint);
 }

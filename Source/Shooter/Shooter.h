@@ -8,3 +8,4 @@
 
 #define EPS_Stone EPhysicalSurface::SurfaceType1
 #define EPS_Metal EPhysicalSurface::SurfaceType2
+#define EPS_Flesh EPhysicalSurface::SurfaceType3

@@ -50,6 +50,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = WeaponProperties)
 	bool bUseScatter = true;
 
+	UPROPERTY(EditAnywhere, Category = WeaponProperties)
+	float NeutralizeWeaponDist = 85.f;
+
 #pragma endregion WeaponProperties
 
 #pragma region Components
@@ -73,4 +76,5 @@ public:
 	FORCEINLINE float GetFireDelay() const { return FireDelay; }
 	FORCEINLINE bool GetbAutomatic() const { return bAutomatic; }
 	FORCEINLINE float GetDamage() const { return Damage; }
+	FORCEINLINE float GetNeutralizeWeaponDist() const { return NeutralizeWeaponDist; }
 };

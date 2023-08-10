@@ -31,4 +31,6 @@ void UShooterCharacterAnimInstance::NativeUpdateAnimation(float DeltaTime)
 	ControlRotation_Rep = ShooterCharacter->GetControlRotation_Rep();
 	bIsAiming = ShooterCharacter->GetbAiming();
 	CharacterLeanState = ShooterCharacter->GetLeanState();
+	CurrentWeaponNeutralizeTraceDist = ShooterCharacter->GetNeutralizeTraceDist();
+	DefaultWeaponNeutralizeTraceDist = ShooterCharacter->GetDefaultWeaponNeutralizeTraceDist();
 }
